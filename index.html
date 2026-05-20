@@ -81,20 +81,6 @@
       overflow: hidden;
     }
 
-    .eyebrow-pill::after, .card-tag::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 50%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-      animation: shimmerSweep 4s infinite ease-in-out;
-    }
-
-    .card-tag::after {
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
-    }
 
     .pulse-dot {
       width: 6px;
@@ -377,10 +363,6 @@
       100% { transform: translate3d(-50%, 0, 0); }
     }
 
-    @keyframes shimmerSweep {
-      0% { left: -100%; }
-      30%, 100% { left: 100%; }
-    }
 
     @keyframes steamRise {
       0% { opacity: 0; transform: translateY(2px); }
