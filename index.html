@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="manifest" href="./manifest.json">
   <!-- skoop-live-runtime -->
   <script src="./skoop-live.js"></script>
     <meta charset="UTF-8">
@@ -51,5 +52,14 @@
         <h1>Hello!</h1>
         <p>I'm ready to help you build your digital signage app. What kind of app would you like to create?</p>
     </div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js')
+          .then(function (reg) { console.log('[PWA] SW registered:', reg.scope); })
+          .catch(function (err) { console.warn('[PWA] SW registration failed:', err); });
+      });
+    }
+  </script>
 </body>
 </html>
