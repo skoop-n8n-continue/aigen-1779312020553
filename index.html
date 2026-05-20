@@ -4,62 +4,310 @@
   <link rel="manifest" href="./manifest.json">
   <!-- skoop-live-runtime -->
   <script src="./skoop-live.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive App</title>
-    <style>
-        :root {
-            --primary: #00b7af;
-            --dark: #10181f;
-            --light: #ffffff;
-            --secondary: #6a7071;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imo's Pizza Digital Signage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --imos-red: #E31837;
+      --imos-green: #008248;
+      --bg-dark: #111111;
+      --text-light: #F8F8F8;
+    }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--light);
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden; /* Prevent scrolling on signage */
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: 'Montserrat', sans-serif;
+    }
 
-        .container {
-            text-align: center;
-            padding: 2rem;
-            max-width: 800px;
-        }
+    #signage-app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
 
-        h1 {
-            color: var(--primary);
-            font-size: clamp(2rem, 5vw, 4rem);
-            margin-bottom: 1rem;
-        }
+    /* Slide Base */
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 1.5s ease-in-out, visibility 1.5s;
+    }
 
-        p {
-            font-size: clamp(1rem, 2vw, 1.5rem);
-            color: var(--secondary);
-        }
-    </style>
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Backgrounds & Ken Burns Effect */
+    .bg-image {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
+      transform: scale(1);
+    }
+
+    .hero-bg { background-image: url('https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=1920&h=1080&fit=crop'); }
+    .pizza-bg { background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1920&h=1080&fit=crop'); }
+    .apps-bg { background-image: url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1920&h=1080&fit=crop'); }
+
+    .slide.active .bg-image {
+      animation: kenBurns 12s infinite alternate linear;
+    }
+
+    @keyframes kenBurns {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.15); }
+    }
+
+    /* Dark Gradient Overlay for Text Legibility */
+    .overlay {
+      position: absolute;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(17,17,17,0.95) 0%, rgba(17,17,17,0.85) 40%, rgba(17,17,17,0.2) 100%);
+    }
+
+    .overlay-center {
+      background: rgba(17,17,17,0.6);
+    }
+
+    /* Content Layout */
+    .content {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      height: 100%;
+      padding: 6vw;
+      box-sizing: border-box;
+      display: flex;
+    }
+
+    .center-content {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .split-layout {
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .menu-text {
+      width: 55%;
+    }
+
+    /* Branding */
+    .logo-text {
+      font-size: 8vw;
+      font-weight: 900;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: -2px;
+      margin: 0;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+      line-height: 1;
+    }
+    .logo-text span {
+      color: var(--imos-red);
+    }
+    .tagline {
+      font-size: 3vw;
+      font-weight: 400;
+      color: var(--imos-green);
+      margin-top: 1vh;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    }
+
+    /* Typography & Menu Items */
+    h2 {
+      font-size: 4.5vw;
+      color: var(--imos-red);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 0;
+      margin-bottom: 5vh;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+      border-left: 12px solid var(--imos-green);
+      padding-left: 20px;
+      line-height: 1;
+    }
+
+    h3 {
+      font-size: 2.2vw;
+      margin: 0 0 1vh 0;
+      font-weight: 700;
+      color: var(--text-light);
+    }
+
+    p {
+      font-size: 1.4vw;
+      margin: 0 0 4vh 0;
+      opacity: 0.85;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    /* Staggered Entrance Animation */
+    .item {
+      opacity: 0;
+      transform: translateX(-40px);
+    }
+
+    .slide.active .item {
+      animation: slideRightFade 0.8s forwards ease-out;
+    }
+
+    .slide.active .item:nth-child(1) { animation-delay: 0.6s; }
+    .slide.active .item:nth-child(2) { animation-delay: 0.8s; }
+    .slide.active .item:nth-child(3) { animation-delay: 1.0s; }
+    .slide.active .item:nth-child(4) { animation-delay: 1.2s; }
+
+    @keyframes slideRightFade {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Branding element fixed on menu slides */
+    .corner-brand {
+      position: absolute;
+      bottom: 4vh;
+      right: 4vw;
+      z-index: 10;
+      font-size: 2vw;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.4);
+    }
+    .corner-brand span {
+      color: rgba(227, 24, 55, 0.4);
+    }
+
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Hello!</h1>
-        <p>I'm ready to help you build your digital signage app. What kind of app would you like to create?</p>
+
+<div id="signage-app">
+  <!-- Slide 1: Hero Branding -->
+  <section class="slide slide-hero active">
+    <div class="bg-image hero-bg"></div>
+    <div class="overlay overlay-center"></div>
+    <div class="content center-content">
+      <h1 class="logo-text">IMO'S <span>PIZZA</span></h1>
+      <h2 class="tagline">The Square Beyond Compare</h2>
     </div>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js')
-          .then(function (reg) { console.log('[PWA] SW registered:', reg.scope); })
-          .catch(function (err) { console.warn('[PWA] SW registration failed:', err); });
-      });
+  </section>
+
+  <!-- Slide 2: Specialty Pizzas -->
+  <section class="slide slide-menu">
+    <div class="bg-image pizza-bg"></div>
+    <div class="overlay"></div>
+    <div class="content split-layout">
+      <div class="menu-text">
+        <h2>Specialty Pizzas</h2>
+        <div class="menu-items">
+          <div class="item">
+            <h3>Deluxe Pizza</h3>
+            <p>Sausage, bacon, mushrooms, onions, green peppers, &amp; our signature Provel® cheese</p>
+          </div>
+          <div class="item">
+            <h3>All Meat Pizza</h3>
+            <p>Sausage, pepperoni, bacon, Canadian bacon, &amp; Provel®</p>
+          </div>
+          <div class="item">
+            <h3>Veggie Pizza</h3>
+            <p>Mushrooms, onions, green peppers, black olives, tomatoes, &amp; Provel®</p>
+          </div>
+          <div class="item">
+            <h3>BBQ Chicken Pizza</h3>
+            <p>Grilled chicken, red onions, bacon, sweet &amp; tangy BBQ sauce, &amp; Provel®</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="corner-brand">IMO'S <span>PIZZA</span></div>
+  </section>
+
+  <!-- Slide 3: Salads & Apps -->
+  <section class="slide slide-menu">
+    <div class="bg-image apps-bg"></div>
+    <div class="overlay"></div>
+    <div class="content split-layout">
+      <div class="menu-text">
+        <h2>Salads &amp; Apps</h2>
+        <div class="menu-items">
+          <div class="item">
+            <h3>Famous Toasted Ravioli</h3>
+            <p>A St. Louis classic! Meat-filled ravioli, breaded &amp; fried, served with our signature meat sauce.</p>
+          </div>
+          <div class="item">
+            <h3>Provel® Bites</h3>
+            <p>Lightly breaded and fried bites of our famous Provel® cheese.</p>
+          </div>
+          <div class="item">
+            <h3>House Salad</h3>
+            <p>Fresh lettuce generously topped with shredded Provel® cheese &amp; house dressing.</p>
+          </div>
+          <div class="item">
+            <h3>Garlic Cheese Bread</h3>
+            <p>Toasted with garlic butter and melted Provel® cheese.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="corner-brand">IMO'S <span>PIZZA</span></div>
+  </section>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const slides = document.querySelectorAll('.slide');
+    let currentIndex = 0;
+
+    // Set duration for each slide in milliseconds
+    const slideDuration = 8000;
+
+    function nextSlide() {
+      // Remove active class from current slide
+      slides[currentIndex].classList.remove('active');
+
+      // Calculate next index
+      currentIndex = (currentIndex + 1) % slides.length;
+
+      // Add active class to next slide
+      slides[currentIndex].classList.add('active');
     }
-  </script>
+
+    // Start the rotation loop
+    setInterval(nextSlide, slideDuration);
+  });
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js')
+        .then(function (reg) { console.log('[PWA] SW registered:', reg.scope); })
+        .catch(function (err) { console.warn('[PWA] SW registration failed:', err); });
+    });
+  }
+</script>
 </body>
 </html>
