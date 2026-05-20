@@ -40,6 +40,7 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
+      animation: breathe 6s infinite ease-in-out alternate;
     }
 
     h1, h2, h3, h4, .bebas {
@@ -76,6 +77,23 @@
       font-weight: 600;
       letter-spacing: 0.5px;
       width: fit-content;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .eyebrow-pill::after, .card-tag::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shimmerSweep 4s infinite ease-in-out;
+    }
+
+    .card-tag::after {
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
     }
 
     .pulse-dot {
@@ -149,6 +167,18 @@
       display: flex;
       gap: 2px;
       overflow: hidden;
+      position: relative;
+    }
+
+    .stripe-divider::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 30%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+      animation: shimmerSweep 5s infinite ease-in-out;
     }
 
     .stripe-segment {
@@ -205,18 +235,14 @@
       transition: width 0.4s ease-out;
     }
 
-    .card:hover {
-      transform: translateY(-3px) !important;
+    .card:hover, .card.highlight {
+      transform: translateY(-3px) scale(1.02) !important;
       border-color: var(--accent-color, var(--red));
       box-shadow: 0 10px 25px rgba(0,0,0,0.08), 0 0 15px var(--accent-glow);
     }
 
-    .card:hover::after {
+    .card:hover::after, .card.highlight::after {
       width: 100%;
-    }
-
-    .card:hover .card-icon {
-      animation: bob 1s infinite ease-in-out;
     }
 
     .card-top {
@@ -245,7 +271,16 @@
     .card-icon {
       width: 48px;
       height: 48px;
+      animation: bob 2s infinite ease-in-out;
     }
+
+    /* Staggered bob animations */
+    .card:nth-child(1) .card-icon { animation-delay: 0.1s; }
+    .card:nth-child(2) .card-icon { animation-delay: 0.4s; }
+    .card:nth-child(3) .card-icon { animation-delay: 0.7s; }
+    .card:nth-child(4) .card-icon { animation-delay: 1.0s; }
+    .card:nth-child(5) .card-icon { animation-delay: 1.3s; }
+    .card:nth-child(6) .card-icon { animation-delay: 1.6s; }
 
     .card-title {
       font-size: 2rem;
@@ -351,6 +386,26 @@
     @keyframes ticker {
       0% { transform: translate3d(0, 0, 0); }
       100% { transform: translate3d(-50%, 0, 0); }
+    }
+
+    @keyframes shimmerSweep {
+      0% { left: -100%; }
+      30%, 100% { left: 100%; }
+    }
+
+    @keyframes steamRise {
+      0% { opacity: 0; transform: translateY(2px); }
+      50% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-4px); }
+    }
+
+    @keyframes breathe {
+      from { transform: scale(1.0); }
+      to { transform: scale(1.008); }
+    }
+
+    .steam {
+      animation: steamRise 2s infinite ease-in-out;
     }
   </style>
 </head>
@@ -509,9 +564,9 @@
             <path d="M18 19C18 16 22 14 26 14C30 14 32 17 32 20C32 23 28 25 24 25C20 25 18 22 18 19Z" fill="#d92121"/>
             <circle cx="25" cy="18" r="5" fill="#693b22"/>
             <circle cx="23.5" cy="16.5" r="1.5" fill="#8c5830"/>
-            <path d="M22 6C23 8 21 10 22 12" stroke="#a3a3a3" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-            <path d="M26 4C27 6 25 8 26 10" stroke="#a3a3a3" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-            <path d="M30 6C31 8 29 10 30 12" stroke="#a3a3a3" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <path class="steam" style="animation-delay: 0s" d="M22 6C23 8 21 10 22 12" stroke="#a3a3a3" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <path class="steam" style="animation-delay: 0.3s" d="M26 4C27 6 25 8 26 10" stroke="#a3a3a3" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <path class="steam" style="animation-delay: 0.6s" d="M30 6C31 8 29 10 30 12" stroke="#a3a3a3" stroke-width="1.5" stroke-linecap="round" fill="none"/>
           </svg>
         </div>
       </div>
@@ -585,6 +640,27 @@
           .catch(function (err) { console.warn('[PWA] SW registration failed:', err); });
       });
     }
+
+    // Auto-spotlight cycle logic
+    const cards = document.querySelectorAll('.card');
+    let currentCardIndex = 0;
+
+    function cycleHighlight() {
+      // Remove highlight from all cards
+      cards.forEach(card => card.classList.remove('highlight'));
+
+      // Add highlight to current card
+      cards[currentCardIndex].classList.add('highlight');
+
+      // Increment index and loop back
+      currentCardIndex = (currentCardIndex + 1) % cards.length;
+    }
+
+    // Initial highlight
+    cycleHighlight();
+
+    // Cycle every 2.5 seconds
+    setInterval(cycleHighlight, 2500);
   </script>
 </body>
 </html>
